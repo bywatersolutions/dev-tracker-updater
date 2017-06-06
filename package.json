@@ -1,0 +1,15 @@
+{
+  "name": "tracker-updater",
+  "version": "1.0.0",
+  "description": "Utility to update our dev tracker bugzilla based on the Koha community bugzilla",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kyle M Hall",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "bz": "^0.4.5",
+    "node-getopt-long": "^0.3.2"
+  }
+}
