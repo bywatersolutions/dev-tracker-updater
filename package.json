@@ -10,9 +10,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "bz": "^0.4.5",
-    "node-getopt-long": "^0.3.2"
-  },
-  "devDependencies": {
+    "node-getopt-long": "^0.3.2",
     "colors": "^1.1.2"
   }
 }
