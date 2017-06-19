@@ -54,7 +54,7 @@ bws_tracker.searchBugs(searchParams, function(error, bugs) {
       let community_status = community_bug.status;
       console.log("BWS ID: " + colors.green(bws_bug.id));
       console.log("BWS STATUS: " + colors.green(bws_status));
-      console.log("STATUS: " + colors.blue(community_status));
+      console.log("STATUS: " + colors.cyan(community_status));
 
       if (error) {
         console.log(colors.red("ERROR GETTING COMMUNITY BUG!"));
@@ -67,7 +67,13 @@ bws_tracker.searchBugs(searchParams, function(error, bugs) {
           { cf_community_status: community_status },
           function(error, ok) {
             console.log(
-              `Updating BWS Tracker Bug ${bws_bug.id} with status ${bws_status} to community status ${community_status} from community bug ${community_bug.id}`
+              `Updating BWS Tracker Bug ${colors.green(
+                bws_bug.id
+              )} with status ${colors.green(
+                bws_status
+              )} to community status ${colors.cyan(
+                community_status
+              )} from community bug ${colors.cyan(community_bug.id)}`
             );
             if (error) {
               console.log(colors.red("ERROR UPDATING BWS TRACKER!"));
