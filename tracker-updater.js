@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 let bz = require("bz");
+let colors = require("colors/safe");
 let options = require("node-getopt-long").options(
   [
     ["bws_url|bws-url=s", "BWS tracker URL"],
@@ -37,7 +38,7 @@ let community_tracker = bz.createClient({
 let searchParams = { status: "Submitted to Community" };
 bws_tracker.searchBugs(searchParams, function(error, bugs) {
   if (error) {
-    console.log("ERROR SEARCHING BWS DEV TRACKER!");
+    console.log(colors.red("ERROR SEARCHING BWS DEV TRACKER!"));
     console.log(error);
     process.exit(1);
   }
@@ -51,12 +52,12 @@ bws_tracker.searchBugs(searchParams, function(error, bugs) {
       community_bug
     ) {
       let community_status = community_bug.status;
-      console.log("BWS ID: " + bws_bug.id);
-      console.log("BWS STATUS: " + bws_status);
-      console.log("STATUS: " + community_status);
+      console.log("BWS ID: " + colors.green(bws_bug.id));
+      console.log("BWS STATUS: " + colors.green(bws_status));
+      console.log("STATUS: " + colors.blue(community_status));
 
       if (error) {
-        console.log("ERROR GETTING COMMUNITY BUG!");
+        console.log(colors.red("ERROR GETTING COMMUNITY BUG!"));
         console.log(error);
       }
 
@@ -69,7 +70,7 @@ bws_tracker.searchBugs(searchParams, function(error, bugs) {
               `Updating BWS Tracker Bug ${bws_bug.id} with status ${bws_status} to community status ${community_status} from community bug ${community_bug.id}`
             );
             if (error) {
-              console.log("ERROR UPDATING BWS TRACKER!");
+              console.log(colors.red("ERROR UPDATING BWS TRACKER!"));
               console.log(error);
             }
           }

@@ -11,5 +11,8 @@
   "dependencies": {
     "bz": "^0.4.5",
     "node-getopt-long": "^0.3.2"
+  },
+  "devDependencies": {
+    "colors": "^1.1.2"
   }
 }
