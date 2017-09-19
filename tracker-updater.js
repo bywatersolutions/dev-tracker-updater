@@ -51,15 +51,17 @@ bws_tracker.searchBugs(searchParams, function(error, bugs) {
       error,
       community_bug
     ) {
+      if (error) {
+        console.log("BWS ID: " + colors.red(bws_bug.id));
+        console.log(colors.red("ERROR GETTING COMMUNITY BUG!"));
+        console.log(error);
+        return;
+      }
+
       let community_status = community_bug.status;
       console.log("BWS ID: " + colors.green(bws_bug.id));
       console.log("BWS STATUS: " + colors.green(bws_status));
       console.log("STATUS: " + colors.cyan(community_status));
-
-      if (error) {
-        console.log(colors.red("ERROR GETTING COMMUNITY BUG!"));
-        console.log(error);
-      }
 
       if (bws_status != community_status) {
         bws_tracker.updateBug(
