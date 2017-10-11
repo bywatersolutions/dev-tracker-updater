@@ -2,9 +2,9 @@
   "name": "tracker-updater",
   "version": "1.0.0",
   "description": "Utility to update our dev tracker bugzilla based on the Koha community bugzilla",
-  "repository" : {
-	"type" : "git",
-	"url" : "https://github.com/bywatersolutions/dev-tracker-updater.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bywatersolutions/dev-tracker-updater.git"
   },
   "main": "index.js",
   "scripts": {
@@ -13,8 +13,10 @@
   "author": "Kyle M Hall",
   "license": "GPL-3.0",
   "dependencies": {
+    "async": "^2.5.0",
+    "bestpractical-rt": "git://github.com/kylemhall/bestpractical-rt.git",
     "bz": "^0.4.5",
-    "node-getopt-long": "^0.3.2",
-    "colors": "^1.1.2"
+    "colors": "^1.1.2",
+    "node-getopt-long": "^0.3.2"
   }
 }
