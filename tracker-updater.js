@@ -77,15 +77,15 @@ function create_tracks() {
           if (!rt_ticket["CF.{Work to be done}"]) return;
           if (rt_ticket["CF.{Dev Tracker}"]) return;
 
-          const product = rt_ticket["CF.{Development Type}"] == "Libki"
+          const product = rt_ticket["CF.{Development Type}"] == "LibKi" // Mis-capitalized in RT
             ? "Libki"
             : "Koha";
           const component = rt_ticket["CF.{Development Type}"] == "Koha"
             ? "General"
-            : rt_ticket["CF.{Development Type}"] == "Libki"
+            : rt_ticket["CF.{Development Type}"] == "LibKi" // Mis-capitalized in RT
               ? "General"
               : rt_ticket["CF.{Development Type}"];
-          const version = rt_ticket["CF.{Development Type}"] == "Libki"
+          const version = rt_ticket["CF.{Development Type}"] == "LibKi" // Mis-capitalized in RT
             ? "Libki 2"
             : "unspecified";
 
