@@ -1,13 +1,9 @@
-FROM node:8.9.1-stretch
+FROM perl
 
-WORKDIR /usr/src/app
-
-# Install app dependencies
-COPY package*.json ./
-
-RUN npm install
+WORKDIR /app
 
 # Copy all files to workdir
 COPY . .
 
-CMD node tracker-updater.js --dev-username $DEV_USERNAME --dev-password $DEV_PASSWORD --community-username $COM_USERNAME --community-password $COM_PASSWORD --rt-username $RT_USERNAME --rt-password $RT_PASSWORD --rt-url $RT_URL --dev-url $DEV_URL --community-url $COM_URL
+RUN cpanm --installdeps . 
+RUN cpanm https://github.com/kylemhall/BZ-Client-REST.git
