@@ -1,11 +1,10 @@
-#!/usr/bin/perl
+#!/usr/local/bin/perl
 
 use Modern::Perl;
 
 use Try::Tiny;
 use RT::Client::REST;
 use BZ::Client::REST;
-use JSON;
 use Term::ANSIColor;
 use Data::Dumper;
 use Getopt::Long::Descriptive;

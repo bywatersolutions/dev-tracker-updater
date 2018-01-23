@@ -1,10 +1,6 @@
 requires 'Modern::Perl';
 requires 'Try::Tiny';
 requires 'RT::Client::REST';
-requires 'LWP::Protocol::https';
 requires 'Term::ANSIColor';
 requires 'Data::Dumper';
-requires 'REST::Client';
-requires 'JSON';
-requires 'Class::Accessor';
 requires 'Getopt::Long::Descriptive';
