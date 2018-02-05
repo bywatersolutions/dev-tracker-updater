@@ -130,5 +130,44 @@ foreach my $t (@tickets_needing_tracks) {
 
 # Create Community Bugs
 say colored( 'Creating Community Bugs', 'green' );
-my $results = $koha_client->search_bugs( { status => 'In Development' } );
+my $results = $tracker_client->search_bugs( { status => 'In Development' } );
+foreach my $track ( @$results ) {
+    next if $track->{cf_community_bug}; # Community bug already exists
+    next if $track->{component} eq 'Plugin'; # Plugins exist outside community process
+    next if $track->{product} ne 'Koha'; # Community process is only used for Koha
+    next if $track->{cf_create_community_bug} eq 'No';
 
+    say "Found track: " . colored( $track->{id}, 'cyan' );
+
+    my $comments = $tracker_client->get_comments( $track->{id} );
+    my $comment = $comments->[0]->{text};
+
+    my $data = {
+        product      => 'Koha',
+        component    => 'Architecture, internals, and plumbing',
+        version      => 'master',
+        assigned_to  => $track->{assigned_to},
+        summary      => $track->{summary},
+        description  => $comment,
+    };
+
+    my $bug_id = $koha_client->create_bug($data);
+
+    say 'Created bug: ' . colored( $bug_id, 'green' );
+
+    $tracker_client->update_bug( $track->{id}, { cf_community_bug => $bug_id } );
+}
+
+# Update tracks from community bugs
+say colored( 'Updating Tracks from Community Bugs', 'green' );
+$results = $tracker_client->search_bugs( { status => 'Submitted to Community' } );
+foreach my $track ( @$results ) {
+    say "Found track: " . colored( $track->{id}, 'cyan' ) if $opt->verbose;
+
+    my $bug = $koha_client->get_bug( $track->{cf_community_bug} );
+
+    if ( $track->{cf_community_status} ne $bug->{status} ) {
+        $tracker_client->update_bug( $track->{id}, { cf_community_status => $bug->{status} } );
+        say 'Updated track ' . colored( $track->{id}, 'cyan' ) . ': ' . colored( $track->{cf_community_status}, 'red' ) . ' => ' . colored( $bug->{status}, 'green' );;
+    }
+}
