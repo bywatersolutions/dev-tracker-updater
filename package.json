@@ -6,17 +6,6 @@
     "type": "git",
     "url": "https://github.com/bywatersolutions/dev-tracker-updater.git"
   },
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "Kyle M Hall",
   "license": "GPL-3.0",
-  "dependencies": {
-    "async": "^2.5.0",
-    "bestpractical-rt": "git://github.com/kylemhall/bestpractical-rt.git",
-    "bz": "^0.4.5",
-    "colors": "^1.1.2",
-    "node-getopt-long": "^0.3.2"
-  }
 }
