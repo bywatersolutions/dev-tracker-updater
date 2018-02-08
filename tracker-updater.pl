@@ -11,20 +11,26 @@ use Getopt::Long::Descriptive;
 
 my ( $opt, $usage ) = describe_options(
     'tracker-updater.pl',
-    [ "rt-url=s",      "BWS RT URL",      { required => 1 } ],
-    [ "rt-username=s", "BWS RT username", { required => 1 } ],
-    [ "rt-password=s", "BWS RT password", { required => 1 } ],
+    [ "rt-url=s",      "BWS RT URL",      { required => 1, default => $ENV{RT_URL} } ],
+    [ "rt-username=s", "BWS RT username", { required => 1, default => $ENV{RT_USER} } ],
+    [ "rt-password=s", "BWS RT password", { required => 1, default => $ENV{RT_PW} } ],
     [],
-    [ "dev-url=s",      "BWS tracker URL",      { required => 1 } ],
-    [ "dev-username=s", "BWS tracker username", { required => 1 } ],
-    [ "dev-password=s", "BWS tracker password", { required => 1 } ],
+    [ "dev-url=s",      "BWS tracker URL",      { required => 1, default => $ENV{BWS_URL} } ],
+    [ "dev-username=s", "BWS tracker username", { required => 1, default => $ENV{BWS_USER} } ],
+    [ "dev-password=s", "BWS tracker password", { required => 1, default => $ENV{BWS_PW} } ],
     [],
-    [ "community-url=s",      "Community tracker URL",      { required => 1 } ],
-    [ "community-username=s", "Community tracker username", { required => 1 } ],
-    [ "community-password=s", "Community tracker password", { required => 1 } ],
+    [ "community-url=s",      "Community tracker URL",      { required => 1, default => $ENV{KOHA_URL} } ],
+    [ "community-username=s", "Community tracker username", { required => 1, default => $ENV{KOHA_USER} } ],
+    [ "community-password=s", "Community tracker password", { required => 1, default => $ENV{KOHA_PW} } ],
     [],
-    [ 'verbose|v', "print extra stuff" ],
-    [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
+    [ "action|a=s",    "Optional action to perform ( create-track )" ],
+    [ "bug|b=s",       "Bug to perform action on" ],
+    [ "dev-track|d=s", "Track to perform action on" ],
+    [ "ticket|t=s",    "RT Ticket to perform action on" ],
+    [],
+    [ "force|f", "Get pushy" ],
+    [ 'verbose|v', "Print extra stuff" ],
+    [ 'help', "Print usage message and exit", { shortcircuit => 1 } ],
 );
 
 print( $usage->text ), exit if $opt->help;
@@ -67,6 +73,54 @@ try {
 catch {
     die "problem logging in: ", shift->message;
 };
+
+if ( $opt->action ) {
+    if ( $opt->action eq 'create-track' ) {
+        my $bug_id = $opt->bug;
+
+        my $results =
+          $tracker_client->search_bugs( { cf_community_bug => $bug_id } );
+        my $track_id;
+        foreach my $r (@$results) {
+            if ( $r->{status} ne 'RESOLVED' ) {
+                $track_id = $r->{id};
+                last;
+            }
+        }
+
+        if ($track_id) {
+            say 'Track '
+              . colored( $track_id, 'red' )
+              . ' already exists for bug '
+              . colored( $bug_id, 'cyan' );
+
+        }
+        else {
+            my $bug = $koha_client->get_bug($bug_id);
+
+            my $track_data = {
+                product             => 'Koha',
+                component           => 'General',
+                version             => 'unspecified',
+                assigned_to         => $bz_tracker_user,
+                summary             => $bug->{summary},
+                op_sys              => 'All',
+                rep_platform        => 'All',
+                cf_community_bug    => $bug_id,
+                cf_community_status => $bug->{status},
+                bug_status          => 'Submitted to Community',
+            };
+
+            my $track_id = $tracker_client->create_bug($track_data);
+
+            say 'Created track '
+              . colored( $track_id, 'green' )
+              . ' for bug '
+              . colored( $bug_id, 'cyan' );
+        }
+    }
+    exit 0;
+}
 
 # Create tracks
 say colored( 'Creating Tracks', 'green' );
