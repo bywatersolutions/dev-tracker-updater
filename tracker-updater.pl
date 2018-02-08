@@ -88,7 +88,7 @@ if ( $opt->action ) {
             }
         }
 
-        if ($track_id) {
+        if ( $track_id && !$opt->force ) {
             say 'Track '
               . colored( $track_id, 'red' )
               . ' already exists for bug '
