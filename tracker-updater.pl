@@ -8,6 +8,7 @@ use BZ::Client::REST;
 use Term::ANSIColor;
 use Data::Dumper;
 use Getopt::Long::Descriptive;
+use Carp::Always;
 
 my ( $opt, $usage ) = describe_options(
     'tracker-updater.pl',
