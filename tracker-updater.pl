@@ -170,7 +170,7 @@ foreach my $t (@tickets_needing_tracks) {
         op_sys       => 'All',
         rep_platform => 'All',
         cf_rt_ticket => $t->{id},
-        bug_status   => 'In Development'
+        bug_status   => 'Ready for Development'
     };
 
     my $track_id = $tracker_client->create_bug($track_data);
@@ -185,7 +185,7 @@ foreach my $t (@tickets_needing_tracks) {
 
 # Create Community Bugs
 say colored( 'Creating Community Bugs', 'green' );
-my $results = $tracker_client->search_bugs( { status => 'In Development' } );
+my $results = $tracker_client->search_bugs( { status => 'Ready for Development' } );
 foreach my $track ( @$results ) {
     next if $track->{cf_community_bug}; # Community bug already exists
     next if $track->{component} eq 'Plugin'; # Plugins exist outside community process
