@@ -31,7 +31,7 @@ my ( $opt, $usage ) = describe_options(
     [],
     [ "force|f", "Get pushy" ],
     [ 'verbose|v', "Print extra stuff" ],
-    [ 'help', "Print usage message and exit", { shortcircuit => 1 } ],
+    [ 'help|h', "Print usage message and exit", { shortcircuit => 1 } ],
 );
 
 print( $usage->text ), exit if $opt->help;
