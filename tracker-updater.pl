@@ -217,6 +217,9 @@ foreach my $track ( @$results ) {
 say colored( 'Updating Tracks from Community Bugs', 'green' );
 $results = $tracker_client->search_bugs( { status => 'Submitted to Community' } );
 foreach my $track ( @$results ) {
+    next if $track->{component} eq 'Plugin'; # Plugins exist outside community process
+    next if $track->{product} ne 'Koha'; # Community process is only used for Koha
+
     say "Found track: " . colored( $track->{id}, 'cyan' ) if $opt->verbose;
 
     my $bug = $koha_client->get_bug( $track->{cf_community_bug} );
