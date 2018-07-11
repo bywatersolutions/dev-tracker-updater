@@ -1,0 +1,2 @@
+#!/bin/bash
+docker pull kylemhall/dev-tracker-updater && docker run --env-file ~/.tracker-updater.env kylemhall/dev-tracker-updater /app/tracker-updater.pl "$@"

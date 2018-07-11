@@ -1,2 +1,0 @@
-#!/bin/bash
-docker pull kylemhall/dev-tracker-updater && docker run --env-file env.list kylemhall/dev-tracker-updater
