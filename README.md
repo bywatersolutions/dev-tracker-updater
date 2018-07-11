@@ -1,4 +1,4 @@
-# Tracker Updater - Update values in one Bugzilla repo from another!
+# ByWater Dev Tracker Updater
 
 ## How to install and configure
 
