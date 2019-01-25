@@ -228,4 +228,13 @@ foreach my $track ( @$results ) {
         $tracker_client->update_bug( $track->{id}, { cf_community_status => $bug->{status} } );
         say 'Updated track ' . colored( $track->{id}, 'cyan' ) . ': ' . colored( $track->{cf_community_status}, 'red' ) . ' => ' . colored( $bug->{status}, 'green' );;
     }
+
+    $rt->edit(
+        type => 'ticket',
+        id   => $t->{id},
+        set  => {
+            "CF.{Community Status}" => $track->{cf_community_bug},
+            "CF.{Koha Version}"     => $track->{cf_koha_version},
+        }
+    );
 }
