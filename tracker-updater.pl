@@ -219,6 +219,8 @@ $results = $tracker_client->search_bugs( { status => 'Submitted to Community' } 
 foreach my $track ( @$results ) {
     next if $track->{component} eq 'Plugin'; # Plugins exist outside community process
     next if $track->{product} ne 'Koha'; # Community process is only used for Koha
+    $track->{cf_community_bug} ||= q{};
+    $track->{cf_koha_version} ||= q{};
 
     say "Found track: " . colored( $track->{id}, 'cyan' ) if $opt->verbose;
 
@@ -229,12 +231,15 @@ foreach my $track ( @$results ) {
         say 'Updated track ' . colored( $track->{id}, 'cyan' ) . ': ' . colored( $track->{cf_community_status}, 'red' ) . ' => ' . colored( $bug->{status}, 'green' );;
     }
 
-    $rt->edit(
-        type => 'ticket',
-        id   => $t->{id},
-        set  => {
-            "CF.{Community Status}" => $track->{cf_community_bug},
-            "CF.{Koha Version}"     => $track->{cf_koha_version},
-        }
-    );
+    my @tickets = split( / /, $track->{cf_rt_ticket} );
+    foreach my $ticket (@tickets) {
+        $rt->edit(
+            type => 'ticket',
+            id   => $ticket,
+            set  => {
+                "CF.{Community Status}" => $track->{cf_community_bug},
+                "CF.{Koha Version}"     => $track->{cf_koha_version},
+            }
+        );
+    }
 }
