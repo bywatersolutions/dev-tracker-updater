@@ -233,13 +233,29 @@ foreach my $track ( @$results ) {
 
     my @tickets = split( / /, $track->{cf_rt_ticket} );
     foreach my $ticket (@tickets) {
-        $rt->edit(
-            type => 'ticket',
-            id   => $ticket,
-            set  => {
-                "CF.{Community Status}" => $track->{cf_community_bug},
-                "CF.{Koha Version}"     => $track->{cf_koha_version},
+        try {
+            $rt->edit(
+                type => 'ticket',
+                id   => $ticket,
+                set  => {
+                    "CF.{Community Status}" => $track->{cf_community_bug},
+                    "CF.{Koha Version}"     => $track->{cf_koha_version},
+                }
+            );
+        }
+        catch {
+            try {
+                $rt->edit(
+                    type => 'ticket',
+                    id   => $ticket,
+                    set  => {
+                        "CF.{Community Status}" => $track->{cf_community_bug},
+                        "CF.{Koha Version}"     => $track->{cf_koha_version},
+                    }
+                );
             }
-        );
+        }
     }
 }
+
+say colored( 'Finished!', 'green' );
