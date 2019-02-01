@@ -238,7 +238,7 @@ foreach my $track ( @$results ) {
                 type => 'ticket',
                 id   => $ticket,
                 set  => {
-                    "CF.{Community Status}" => $track->{cf_community_bug},
+                    "CF.{Community Status}" => $track->{cf_community_status},
                     "CF.{Koha Version}"     => $track->{cf_koha_version},
                 }
             );
@@ -249,7 +249,7 @@ foreach my $track ( @$results ) {
                     type => 'ticket',
                     id   => $ticket,
                     set  => {
-                        "CF.{Community Status}" => $track->{cf_community_bug},
+                        "CF.{Community Status}" => $track->{cf_community_status},
                         "CF.{Koha Version}"     => $track->{cf_koha_version},
                     }
                 );
