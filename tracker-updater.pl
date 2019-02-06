@@ -241,6 +241,7 @@ foreach my $track ( @$results ) {
                 set  => {
                     "CF.{Community Status}" => $track->{cf_community_status},
                     "CF.{Koha Version}"     => $track->{cf_koha_version},
+                    "CF.{Dev Tracker}"      => $track->{id},
                 }
             );
         }
@@ -252,6 +253,7 @@ foreach my $track ( @$results ) {
                     set  => {
                         "CF.{Community Status}" => $track->{cf_community_status},
                         "CF.{Koha Version}"     => $track->{cf_koha_version},
+                        "CF.{Dev Tracker}"      => $track->{id},
                     }
                 );
             }
