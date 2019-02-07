@@ -240,23 +240,28 @@ foreach my $track ( @$results ) {
                 id   => $ticket,
                 set  => {
                     "CF.{Community Status}" => $track->{cf_community_status},
-                    "CF.{Koha Version}"     => $track->{cf_koha_version},
-                    "CF.{Dev Tracker}"      => $track->{id},
                 }
             );
         }
-        catch {
-            try {
-                $rt->edit(
-                    type => 'ticket',
-                    id   => $ticket,
-                    set  => {
-                        "CF.{Community Status}" => $track->{cf_community_status},
-                        "CF.{Koha Version}"     => $track->{cf_koha_version},
-                        "CF.{Dev Tracker}"      => $track->{id},
-                    }
-                );
-            }
+
+        try {
+            $rt->edit(
+                type => 'ticket',
+                id   => $ticket,
+                set  => {
+                    "CF.{Koha Version}" => $track->{cf_koha_version},
+                }
+            );
+        }
+
+        try {
+            $rt->edit(
+                type => 'ticket',
+                id   => $ticket,
+                set  => {
+                    "CF.{Dev Tracker}" => $track->{id},
+                }
+            );
         }
     }
 }
