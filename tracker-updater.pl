@@ -226,6 +226,7 @@ foreach my $track ( @$results ) {
     say "Found track: " . colored( $track->{id}, 'cyan' ) if $opt->verbose;
 
     my $bug = $koha_client->get_bug( $track->{cf_community_bug} );
+    $bug->{status} ||= q{};
 
     if ( $track->{cf_community_status} ne $bug->{status} ) {
         $tracker_client->update_bug( $track->{id}, { cf_community_status => $bug->{status} } );
