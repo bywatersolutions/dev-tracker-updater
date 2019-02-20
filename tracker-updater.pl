@@ -242,7 +242,7 @@ foreach my $track ( @$results ) {
                     "CF.{Community Status}" => $track->{cf_community_status},
                 }
             );
-        }
+        };
 
         try {
             $rt->edit(
@@ -252,7 +252,7 @@ foreach my $track ( @$results ) {
                     "CF.{Koha Version}" => $track->{cf_koha_version},
                 }
             );
-        }
+        };
 
         try {
             $rt->edit(
@@ -263,7 +263,7 @@ foreach my $track ( @$results ) {
                 }
             );
         }
-    }
+    };
 }
 
 say colored( 'Finished!', 'green' );
