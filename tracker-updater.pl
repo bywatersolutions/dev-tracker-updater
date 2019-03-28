@@ -30,7 +30,7 @@ my ( $opt, $usage ) = describe_options(
     [ "ticket|t=s",    "RT Ticket to perform action on" ],
     [],
     [ "force|f", "Get pushy" ],
-    [ 'verbose|v', "Print extra stuff" ],
+    [ 'verbose|v+', "Print extra stuff" ],
     [ 'help|h', "Print usage message and exit", { shortcircuit => 1 } ],
 );
 
@@ -208,7 +208,12 @@ foreach my $track ( @$results ) {
 
     my $bug_id = $koha_client->create_bug($data);
 
-    say 'Created bug: ' . colored( $bug_id, 'green' );
+    if ( $bug_id ) {
+        say 'Created bug: ' . colored( $bug_id, 'green' );
+    } else {
+	say colored( "ERROR: No bug id recieved from community bugzilla. No bug created", 'red' );
+	say Data::Dumper::Dumper( $data );
+    }
 
     $tracker_client->update_bug( $track->{id}, { cf_community_bug => $bug_id } );
 }
@@ -235,6 +240,9 @@ foreach my $track ( @$results ) {
 
     my @tickets = split( / /, $track->{cf_rt_ticket} );
     foreach my $ticket (@tickets) {
+	next unless $ticket;
+
+	say "Updating ticket " . colored( $ticket, 'magenta' ) . " for track " . colored( $track->{id}, 'cyan' ) if $opt->verbose > 1;
         try {
             $rt->edit(
                 type => 'ticket',
