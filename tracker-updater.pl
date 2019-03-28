@@ -231,11 +231,12 @@ foreach my $track ( @$results ) {
     say "Found track: " . colored( $track->{id}, 'cyan' ) if $opt->verbose;
 
     my $bug = $koha_client->get_bug( $track->{cf_community_bug} );
+    say "Bug data: " . Data::Dumper::Dumper( $bug ) if $opt-verbose > 2;
     $bug->{status} ||= q{};
 
     if ( $track->{cf_community_status} ne $bug->{status} ) {
         $tracker_client->update_bug( $track->{id}, { cf_community_status => $bug->{status} } );
-        say 'Updated track ' . colored( $track->{id}, 'cyan' ) . ': ' . colored( $track->{cf_community_status}, 'red' ) . ' => ' . colored( $bug->{status}, 'green' );;
+        say 'Updated track ' . colored( $track->{id}, 'cyan' ) . ': ' . colored( $track->{cf_community_status}, 'red' ) . ' => ' . colored( $bug->{status}, 'green' );
     }
 
     my @tickets = split( / /, $track->{cf_rt_ticket} );
