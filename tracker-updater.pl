@@ -133,7 +133,7 @@ if ( $opt->action ) {
             $ua->post(
                 $opt->slack,
                 Content_Type => 'application/json',
-                Content => to_json( { text => "Created track $track_id for bug $bug_id" } ),
+                Content => to_json( { text => "Created <$bz_tracker_url/show_bug.cgi?id=$track_id|Track $track_id> for <$bz_koha_url/show_bug.cgi?id=$bug_id|Bug $bug_id>" } ),
             ) if $opt->slack;
         }
     }
@@ -196,7 +196,7 @@ foreach my $t (@tickets_needing_tracks) {
     $ua->post(
         $opt->slack,
         Content_Type => 'application/json',
-        Content => to_json( { text => "Created track $track_id for ticket $t->{id}" } ),
+        Content => to_json( { text => "Created <$bz_tracker_url/show_bug.cgi?id=$track_id|Track $track_id> for <$rt_url/Ticket/Display.html?id=$t->{id}|Ticket $t->{id}>" } ),
     ) if $opt->slack;
 
     $rt->edit(
@@ -236,7 +236,7 @@ foreach my $track ( @$results ) {
         $ua->post(
             $opt->slack,
             Content_Type => 'application/json',
-            Content => to_json( { text => "Created bug $bug_id for track $track->{id}" } ),
+            Content => to_json( { text => "Created <$bz_koha_url/show_bug.cgi?id=$bug_id|Bug $bug_id> for <$bz_tracker_url/show_bug.cgi?id=$track->{id}|Track $track->{id}>" } ),
         ) if $opt->slack;
     } else {
         say colored( "ERROR: No bug id recieved from community bugzilla. No bug created", 'red' );
@@ -245,7 +245,7 @@ foreach my $track ( @$results ) {
         $ua->post(
             $opt->slack,
             Content_Type => 'application/json',
-            Content => to_json( { text => "ERROR: Failed to create bug from track $track->{id} => " . Data::Dumper::Dumper( $data ) } ),
+            Content => to_json( { text => "ERROR: Failed to create bug from <$bz_tracker_url/show_bug.cgi?id=$track->{id}|Track $track->{id}> => " . Data::Dumper::Dumper( $data ) } ),
         ) if $opt->slack;
     }
 
@@ -277,7 +277,7 @@ foreach my $track ( @$results ) {
         $ua->post(
             $opt->slack,
             Content_Type => 'application/json',
-            Content => to_json( { text => "Updated track $track->{id}, `$track->{cf_community_status}` => `$bug->{status}`" } ),
+            Content => to_json( { text => "Updated <$bz_tracker_url/show_bug.cgi?id=$track->{id}|Track $track->{id}>, `$track->{cf_community_status}` => `$bug->{status}`" } ),
         ) if $opt->slack;
     }
 
