@@ -2,13 +2,15 @@
 
 use Modern::Perl;
 
-use Try::Tiny;
-use RT::Client::REST;
 use BZ::Client::REST;
-use Term::ANSIColor;
+use Carp::Always;
 use Data::Dumper;
 use Getopt::Long::Descriptive;
-use Carp::Always;
+use JSON qw(to_json);
+use LWP::UserAgent;
+use RT::Client::REST;
+use Term::ANSIColor;
+use Try::Tiny;
 
 my ( $opt, $usage ) = describe_options(
     'tracker-updater.pl',
@@ -29,8 +31,10 @@ my ( $opt, $usage ) = describe_options(
     [ "dev-track|d=s", "Track to perform action on" ],
     [ "ticket|t=s",    "RT Ticket to perform action on" ],
     [],
+    [ 'slack|s=s', "Slack webhook URL", { required => 1, default => $ENV{SLACK_URL} } ],
+    [],
     [ "force|f", "Get pushy" ],
-    [ 'verbose|v+', "Print extra stuff" ],
+    [ 'verbose|v+', "Print extra stuff", { required => 1, default => 0 } ],
     [ 'help|h', "Print usage message and exit", { shortcircuit => 1 } ],
 );
 
@@ -75,6 +79,13 @@ catch {
     die "problem logging in: ", shift->message;
 };
 
+my $ua = LWP::UserAgent->new;
+$ua->post(
+    $opt->slack,
+    Content_Type => 'application/json',
+    Content => to_json( { text => "Running dev tracker updater!" } ),
+) if $opt->slack;
+
 if ( $opt->action ) {
     if ( $opt->action eq 'create-track' ) {
         my $bug_id = $opt->bug;
@@ -118,6 +129,12 @@ if ( $opt->action ) {
               . colored( $track_id, 'green' )
               . ' for bug '
               . colored( $bug_id, 'cyan' );
+
+            $ua->post(
+                $opt->slack,
+                Content_Type => 'application/json',
+                Content => to_json( { text => "Created track $track_id for bug $bug_id" } ),
+            ) if $opt->slack;
         }
     }
     exit 0;
@@ -176,6 +193,12 @@ foreach my $t (@tickets_needing_tracks) {
     my $track_id = $tracker_client->create_bug($track_data);
     say 'Created track: ' . colored( $track_id, 'green' );
 
+    $ua->post(
+        $opt->slack,
+        Content_Type => 'application/json',
+        Content => to_json( { text => "Created track $track_id for ticket $t->{id}" } ),
+    ) if $opt->slack;
+
     $rt->edit(
         type => 'ticket',
         id   => $t->{id},
@@ -210,9 +233,20 @@ foreach my $track ( @$results ) {
 
     if ( $bug_id ) {
         say 'Created bug: ' . colored( $bug_id, 'green' );
+        $ua->post(
+            $opt->slack,
+            Content_Type => 'application/json',
+            Content => to_json( { text => "Created bug $bug_id for track $track->{id}" } ),
+        ) if $opt->slack;
     } else {
-	say colored( "ERROR: No bug id recieved from community bugzilla. No bug created", 'red' );
-	say Data::Dumper::Dumper( $data );
+        say colored( "ERROR: No bug id recieved from community bugzilla. No bug created", 'red' );
+        say Data::Dumper::Dumper( $data );
+
+        $ua->post(
+            $opt->slack,
+            Content_Type => 'application/json',
+            Content => to_json( { text => "ERROR: Failed to create bug from track $track->{id} => " . Data::Dumper::Dumper( $data ) } ),
+        ) if $opt->slack;
     }
 
     $tracker_client->update_bug( $track->{id}, { cf_community_bug => $bug_id } );
@@ -231,12 +265,18 @@ foreach my $track ( @$results ) {
     say "Found track: " . colored( $track->{id}, 'cyan' ) if $opt->verbose;
 
     my $bug = $koha_client->get_bug( $track->{cf_community_bug} );
-    say "Bug data: " . Data::Dumper::Dumper( $bug ) if $opt-verbose > 2;
+    say "Bug data: " . Data::Dumper::Dumper( $bug ) if $opt->verbose > 2;
     $bug->{status} ||= q{};
 
     if ( $track->{cf_community_status} ne $bug->{status} ) {
         $tracker_client->update_bug( $track->{id}, { cf_community_status => $bug->{status} } );
+
         say 'Updated track ' . colored( $track->{id}, 'cyan' ) . ': ' . colored( $track->{cf_community_status}, 'red' ) . ' => ' . colored( $bug->{status}, 'green' );
+        $ua->post(
+            $opt->slack,
+            Content_Type => 'application/json',
+            Content => to_json( { text => "Updated track $track->{id}, `$track->{cf_community_status}` => `$bug->{status}`" } ),
+        ) if $opt->slack;
     }
 
     my @tickets = split( / /, $track->{cf_rt_ticket} );
@@ -244,6 +284,7 @@ foreach my $track ( @$results ) {
 	next unless $ticket;
 
 	say "Updating ticket " . colored( $ticket, 'magenta' ) . " for track " . colored( $track->{id}, 'cyan' ) if $opt->verbose > 1;
+
         try {
             $rt->edit(
                 type => 'ticket',
@@ -276,4 +317,9 @@ foreach my $track ( @$results ) {
     };
 }
 
+$ua->post(
+    $opt->slack,
+    Content_Type => 'application/json',
+    Content => to_json( { text => "Dev tracker updater has finished running!" } ),
+) if $opt->slack;
 say colored( 'Finished!', 'green' );
