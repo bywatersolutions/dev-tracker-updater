@@ -206,52 +206,6 @@ foreach my $t (@tickets_needing_tracks) {
     );
 }
 
-# Create Community Bugs
-say colored( 'Creating Community Bugs', 'green' );
-my $results = $tracker_client->search_bugs( { status => 'Ready for Development' } );
-foreach my $track ( @$results ) {
-    next if $track->{cf_community_bug}; # Community bug already exists
-    next if $track->{component} eq 'Plugin'; # Plugins exist outside community process
-    next if $track->{product} ne 'Koha'; # Community process is only used for Koha
-    next if $track->{cf_create_community_bug} eq 'No';
-
-    say "Found track: " . colored( $track->{id}, 'cyan' );
-
-    my $comments = $tracker_client->get_comments( $track->{id} );
-    my $comment = $comments->[0]->{text};
-
-    my $data = {
-        product      => 'Koha',
-        component    => 'Architecture, internals, and plumbing',
-        version      => 'master',
-        assigned_to  => $track->{assigned_to},
-        summary      => $track->{summary},
-        description  => $comment,
-    };
-
-    my $bug_id = $koha_client->create_bug($data);
-
-    if ( $bug_id ) {
-        say 'Created bug: ' . colored( $bug_id, 'green' );
-        $ua->post(
-            $opt->slack,
-            Content_Type => 'application/json',
-            Content => to_json( { text => "Created <$bz_koha_url/show_bug.cgi?id=$bug_id|Bug $bug_id> for <$bz_tracker_url/show_bug.cgi?id=$track->{id}|Track $track->{id}>" } ),
-        ) if $opt->slack;
-    } else {
-        say colored( "ERROR: No bug id recieved from community bugzilla. No bug created", 'red' );
-        say Data::Dumper::Dumper( $data );
-
-        $ua->post(
-            $opt->slack,
-            Content_Type => 'application/json',
-            Content => to_json( { text => "ERROR: Failed to create bug from <$bz_tracker_url/show_bug.cgi?id=$track->{id}|Track $track->{id}> => " . Data::Dumper::Dumper( $data ) } ),
-        ) if $opt->slack;
-    }
-
-    $tracker_client->update_bug( $track->{id}, { cf_community_bug => $bug_id } );
-}
-
 # Update tracks from community bugs
 say colored( 'Updating Tracks from Community Bugs', 'green' );
 $results = $tracker_client->search_bugs( { status => 'Submitted to Community' } );
