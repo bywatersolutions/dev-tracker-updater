@@ -208,7 +208,7 @@ foreach my $t (@tickets_needing_tracks) {
 
 # Update tracks from community bugs
 say colored( 'Updating Tracks from Community Bugs', 'green' );
-$results = $tracker_client->search_bugs( { status => 'Submitted to Community' } );
+my $results = $tracker_client->search_bugs( { status => 'Submitted to Community' } );
 foreach my $track ( @$results ) {
     next if $track->{component} eq 'Plugin'; # Plugins exist outside community process
     next if $track->{product} ne 'Koha'; # Community process is only used for Koha
