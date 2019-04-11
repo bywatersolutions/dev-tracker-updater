@@ -231,7 +231,15 @@ foreach my $track ( @$results ) {
         $ua->post(
             $opt->slack,
             Content_Type => 'application/json',
-            Content => to_json( { text => "Updated <$bz_tracker_url/show_bug.cgi?id=$track->{id}|Track $track->{id}>, `$track->{cf_community_status}` => `$bug->{status}`" } ),
+            Content      => to_json(
+                {
+                    title => "Updated <$bz_tracker_url/show_bug.cgi?id=$track->{id}|Track $track->{id}>, `$track->{cf_community_status}` => `$bug->{status}`",
+                    text =>
+                        "<$bz_koha_url/bugzilla3/show_bug.cgi?id=$bug->{id}|BZ$bug->{id}: $bug->{summary}>"
+                      . " / "
+                      . "$rt_url/Ticket/Display.html?id=$track->|RT$track->{id}: $track->{Subject}>"
+                }
+            ),
         ) if $opt->slack;
     }
 
