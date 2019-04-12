@@ -227,19 +227,24 @@ foreach my $track ( @$results ) {
     if ( $track->{cf_community_status} ne $bug->{status} ) {
         $tracker_client->update_bug( $track->{id}, { cf_community_status => $bug->{status} } );
 
+        my $json_data = {
+            "attachments" => [
+                {
+                    title => "Updated <$bz_tracker_url/show_bug.cgi?id=$track->{id}|Track $track->{id}>:"
+                      . " `$track->{cf_community_status}` => `$bug->{status}`",
+                    #pretext => "Pretext _supports_ mrkdwn",
+                    text => "<$bz_koha_url/show_bug.cgi?id=$bug->{id}|Boog $bug->{id}: $bug->{summary}>",
+                    mrkdwn_in => [ "text", "pretext" ],
+                }
+            ]
+        };
+        my $json_text = to_json( $json_data );
+
         say 'Updated track ' . colored( $track->{id}, 'cyan' ) . ': ' . colored( $track->{cf_community_status}, 'red' ) . ' => ' . colored( $bug->{status}, 'green' );
         $ua->post(
             $opt->slack,
             Content_Type => 'application/json',
-            Content      => to_json(
-                {
-                    title => "Updated <$bz_tracker_url/show_bug.cgi?id=$track->{id}|Track $track->{id}>, `$track->{cf_community_status}` => `$bug->{status}`",
-                    text =>
-                        "<$bz_koha_url/bugzilla3/show_bug.cgi?id=$bug->{id}|BZ$bug->{id}: $bug->{summary}>"
-                      . " / "
-                      . "$rt_url/Ticket/Display.html?id=$track->|RT$track->{id}: $track->{Subject}>"
-                }
-            ),
+            Content      => $json_text,
         ) if $opt->slack;
     }
 
