@@ -230,11 +230,22 @@ foreach my $track ( @$results ) {
         my $json_data = {
             "attachments" => [
                 {
-                    title => "Updated <$bz_tracker_url/show_bug.cgi?id=$track->{id}|Track $track->{id}>:"
-                      . " `$track->{cf_community_status}` => `$bug->{status}`",
+                    title => "Updated <$bz_tracker_url/show_bug.cgi?id=$track->{id}|Track $track->{id}>",
                     #pretext => "Pretext _supports_ mrkdwn",
                     text => "<$bz_koha_url/show_bug.cgi?id=$bug->{id}|Boog $bug->{id}: $bug->{summary}>",
-                    mrkdwn_in => [ "text", "pretext" ],
+                    fields => [
+                        {
+                            title => "From",
+                            value => $track->{cf_community_status},
+                            short => JSON::true,
+                        },
+                        {
+                            title => "To",
+                            value => $bug->{status},
+                            short => JSON::true,
+                        }
+                    ],
+                    mrkdwn_in => [ "text", "pretext", "fields" ],
                 }
             ]
         };
