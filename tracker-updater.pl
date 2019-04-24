@@ -226,6 +226,8 @@ foreach my $track ( @$results ) {
 
     ( $track->{cf_community_bug} ) = split( / /, $track->{cf_community_bug} ); # Only use leftmost bug if multiple bugs are associated with track
 
+    next unless $track->{cf_community_bug};
+
     say "Found track: " . colored( $track->{id}, 'cyan' ) if $opt->verbose;
 
     my $bug = $koha_client->get_bug( $track->{cf_community_bug} );
