@@ -306,7 +306,7 @@ foreach my $track ( @$results ) {
         }
     };
 
-    sleep(10);    # pause for 10 second between requests so we don't kill RT and/or Bugzilla
+    sleep(5);    # pause for 10 second between requests so we don't kill RT and/or Bugzilla
 }
 
 $ua->post(

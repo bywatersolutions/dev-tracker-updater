@@ -9,4 +9,4 @@ COPY . .
 RUN cpanm --installdeps . 
 RUN cpanm https://github.com/kylemhall/BZ-Client-REST.git
 
-CMD ./tracker-updater.pl
+CMD ./tracker-updater.pl -v
