@@ -234,7 +234,7 @@ foreach my $track ( @$results ) {
     say "Bug data: " . Data::Dumper::Dumper( $bug ) if $opt->verbose > 2;
     $bug->{status} ||= q{};
 
-    if ( $track->{cf_community_status} ne $bug->{status} ) {
+    if ( lc($track->{cf_community_status}) ne lc($bug->{status}) ) {
         $tracker_client->update_bug( $track->{id}, { cf_community_status => $bug->{status} } );
 
         my $json_data = {
